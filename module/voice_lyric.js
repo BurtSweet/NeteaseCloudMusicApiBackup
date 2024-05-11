@@ -1,18 +1,17 @@
 module.exports = (query, request) => {
   const data = {
-    limit: query.limit || 20,
-    startTimestamp: query.before || Date.now(),
+    programId: query.id,
   }
   return request(
     'POST',
-    `https://music.163.com/api/sub/artist/new/works/song/list`,
+    `https://interface3.music.163.com/eapi/voice/lyric/get?programId=${query.id}`,
     data,
     {
-      crypto: 'weapi',
+      crypto: 'eapi',
       cookie: query.cookie,
-      ua: query.ua || '',
       proxy: query.proxy,
       realIP: query.realIP,
+      url: '/api/voice/lyric/get',
     },
   )
 }

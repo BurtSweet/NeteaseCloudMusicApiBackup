@@ -135,6 +135,7 @@ async function consturctServer(moduleDefs) {
   const app = express()
   const { CORS_ALLOW_ORIGIN } = process.env
   app.set('trust proxy', true)
+
   /**
    * Serving static files
    */
@@ -175,8 +176,8 @@ async function consturctServer(moduleDefs) {
   /**
    * Body Parser and File Upload
    */
-  app.use(express.json())
-  app.use(express.urlencoded({ extended: false }))
+  app.use(express.json({ limit: '50mb' }))
+  app.use(express.urlencoded({ extended: false, limit: '50mb' }))
 
   app.use(fileUpload())
 
@@ -226,6 +227,9 @@ async function consturctServer(moduleDefs) {
 
           if (ip.substr(0, 7) == '::ffff:') {
             ip = ip.substr(7)
+          }
+          if (ip == '::1') {
+            ip = global.cnIp
           }
           // console.log(ip)
           obj[3] = {

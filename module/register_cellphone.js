@@ -1,12 +1,13 @@
 // 注册账号
-const crypto = require('crypto')
+const CryptoJS = require('crypto-js')
 
 module.exports = (query, request) => {
   query.cookie.os = 'pc'
+  query.cookie.appver = '2.9.7'
   const data = {
     captcha: query.captcha,
     phone: query.phone,
-    password: crypto.createHash('md5').update(query.password).digest('hex'),
+    password: CryptoJS.MD5(query.password).toString(),
     nickname: query.nickname,
     countrycode: query.countrycode || '86',
   }
