@@ -57,9 +57,6 @@ const createRequest = (method, uri, data = {}, options) => {
         __remember_me: true,
         // NMTID: CryptoJS.lib.WordArray.random(16).toString(),
         _ntes_nuid: CryptoJS.lib.WordArray.random(16).toString(),
-        os: options.cookie.os || 'ios',
-        appver:
-          options.cookie.appver || (cookie.os != 'pc' ? iosAppVersion : ''),
       }
       if (uri.indexOf('login') === -1) {
         options.cookie['NMTID'] = CryptoJS.lib.WordArray.random(16).toString()
@@ -73,14 +70,9 @@ const createRequest = (method, uri, data = {}, options) => {
       headers['Cookie'] = cookieObjToString(options.cookie)
     } else if (options.cookie) {
       // cookie string
-      const cookie = cookieToJson(options.cookie)
-      cookie.os = cookie.os || 'ios'
-      cookie.appver = cookie.appver || (cookie.os != 'pc' ? iosAppVersion : '')
-      headers['Cookie'] = cookieObjToString(cookie)
+      headers['Cookie'] = options.cookie
     } else {
       const cookie = cookieToJson('__remember_me=true; NMTID=xxx')
-      cookie.os = cookie.os || 'ios'
-      cookie.appver = cookie.appver || (cookie.os != 'pc' ? iosAppVersion : '')
       headers['Cookie'] = cookieObjToString(cookie)
     }
     // console.log(options.cookie, headers['Cookie'])
@@ -89,6 +81,16 @@ const createRequest = (method, uri, data = {}, options) => {
       encryptData = '',
       crypto = options.crypto,
       csrfToken = cookie['__csrf'] || ''
+
+    if (crypto === '') {
+      // 加密方式为空，以配置文件的加密方式为准
+      if (APP_CONF.encrypt) {
+        crypto = 'eapi'
+      } else {
+        crypto = 'api'
+      }
+    }
+
     // 根据加密方式加密请求数据；目前任意uri都支持四种加密方式
     switch (crypto) {
       case 'weapi':
@@ -112,19 +114,18 @@ const createRequest = (method, uri, data = {}, options) => {
 
       case 'eapi':
       case 'api':
-      case '':
         // 两种加密方式，都应生成客户端的cookie
         const cookie = options.cookie || {}
         const header = {
           osver: cookie.osver || '17.4.1', //系统版本
           deviceId: cookie.deviceId || global.deviceId,
-          appver: cookie.appver || iosAppVersion, // app版本
+          os: cookie.os || 'ios',
+          appver: cookie.appver || (cookie.os != 'pc' ? iosAppVersion : ''), // app版本
           versioncode: cookie.versioncode || '140', //版本号
           mobilename: cookie.mobilename || '', //设备model
           buildver: cookie.buildver || Date.now().toString().substr(0, 10),
           resolution: cookie.resolution || '1920x1080', //设备分辨率
           __csrf: csrfToken,
-          os: cookie.os || 'ios',
           channel: cookie.channel || '',
           requestId: `${Date.now()}_${Math.floor(Math.random() * 1000)
             .toString()
@@ -160,13 +161,6 @@ const createRequest = (method, uri, data = {}, options) => {
           eapi()
         } else if (crypto === 'api') {
           api()
-        } else if (crypto === '') {
-          // 加密方式为空，以配置文件的加密方式为准
-          if (APP_CONF.encrypt) {
-            eapi()
-          } else {
-            api()
-          }
         }
         break
 
