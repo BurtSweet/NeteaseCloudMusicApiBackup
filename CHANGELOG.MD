@@ -1,4 +1,10 @@
 # 更新日志
+### 4.23.3 | 2024.10.15
+- 更正iPhone请求的cookie [#28](https://gitlab.com/Binaryify/neteasecloudmusicapi/-/merge_requests/28)
+
+### 4.23.2 | 2024.10.12
+- cookie参数补充 [#27](https://gitlab.com/Binaryify/neteasecloudmusicapi/-/merge_requests/27)
+
 ### 4.23.1 | 2024.10.06
 - 模拟pc客户端的ua和cookie字段 [#26](https://gitlab.com/Binaryify/neteasecloudmusicapi/-/merge_requests/26)
 
